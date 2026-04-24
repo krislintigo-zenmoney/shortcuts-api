@@ -16,7 +16,7 @@ export const getAccountDataHandler = async (
   const { token } = request.body
 
   const timestamp = Math.round(Date.now() / 1000)
-  const { account: accounts = [], tag: tags = [] } = await zenmoneyClient.diff(
+  const { account: accounts = [], tag: categories = [] } = await zenmoneyClient.diff(
     {
       currentClientTimestamp: timestamp,
       serverTimestamp: timestamp,
@@ -27,6 +27,6 @@ export const getAccountDataHandler = async (
 
   reply.status(200).send({
     accounts: accounts.map(({ id, title, type }) => ({ id, title, type })),
-    tags: tags.map(({ id, title }) => ({ id, title })),
+    categories: categories.map(({ id, title }) => ({ id, title })),
   })
 }
