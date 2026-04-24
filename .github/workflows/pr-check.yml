@@ -1,0 +1,38 @@
+name: Check PR
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [ opened, synchronize, reopened, edited ]
+
+env:
+  NODE_VERSION: 22.13.1
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.ref }}-check-pr
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript check
+        run: pnpm ts:check
+
+      - name: ESLint check
+        run: pnpm eslint:all
+
+      - name: Prettier check
+        run: pnpm prettier:check

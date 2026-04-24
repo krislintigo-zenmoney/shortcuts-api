@@ -1,0 +1,45 @@
+{
+  "name": "zen-ingest",
+  "description": "",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.33.2",
+  "homepage": "",
+  "private": true,
+  "author": {
+    "name": "krislintigo"
+  },
+  "contributors": [],
+  "bugs": {},
+  "engines": {
+    "node": ">= 18.14.2"
+  },
+  "scripts": {
+    "eslint:all": "eslint",
+    "eslint:errors": "eslint --quiet",
+    "ts:check": "tsc -b --noemit",
+    "prettier:check": "prettier \"**/*.{ts,js,vue}\" --check",
+    "prettier:fix": "prettier \"**/*.{ts,js,vue}\" --write",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc --skipLibCheck",
+    "start": "node dist/"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@types/node": "^25.6.0",
+    "dotenv": "^17.4.2",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-sonarjs": "^4.0.3",
+    "globals": "^17.5.0",
+    "prettier": "^3.8.3",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.0"
+  },
+  "dependencies": {
+    "fastify": "^5.8.5",
+    "zod": "^4.3.6"
+  }
+}
