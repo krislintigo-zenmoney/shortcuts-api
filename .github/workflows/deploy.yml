@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /var/www/krislintigo-zenmoney/shortcuts-api
+            cd /var/www/zenmoney/shortcuts-api
             git pull
             
             source ~/.nvm/nvm.sh
