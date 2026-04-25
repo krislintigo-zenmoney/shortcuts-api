@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 
-import { zenmoneyClient } from '../api/zenmoney/zen.api'
+import { zenMoneyClient } from '../api/zenmoney'
 import { ZenmoneyToken } from '../schemas/common.schema'
 
 export const GetAccountDataBodySchema = z.object({
@@ -13,17 +13,16 @@ export const getAccountDataHandler = async (
   request: FastifyRequest<{ Body: GetAccountDataBody }>,
   reply: FastifyReply,
 ) => {
-  const { token } = request.body
+  const { token: accessToken } = request.body
 
   const timestamp = Math.round(Date.now() / 1000)
-  const { account: accounts = [], tag: categories = [] } = await zenmoneyClient.diff(
-    {
-      currentClientTimestamp: timestamp,
-      serverTimestamp: timestamp,
-      forceFetch: ['account', 'tag'],
-    },
-    { token },
-  )
+
+  const { account: accounts, tag: categories } = await zenMoneyClient.diff({
+    accessToken,
+    currentClientTimestamp: timestamp,
+    serverTimestamp: timestamp,
+    forceFetch: ['account', 'tag'],
+  })
 
   reply.status(200).send({
     accounts: accounts.map(({ id, title, type }) => ({ id, title, type })),

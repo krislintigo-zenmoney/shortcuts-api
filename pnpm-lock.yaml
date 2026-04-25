@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@krislintigo-zenmoney/zenmoney-client':
+        specifier: ^1.2.0
+        version: 1.2.0
       fastify:
         specifier: ^5.8.5
         version: 5.8.5
@@ -297,6 +300,10 @@ packages:
   '@humanwhocodes/retry@0.4.3':
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
+
+  '@krislintigo-zenmoney/zenmoney-client@1.2.0':
+    resolution: {integrity: sha512-YrRBr5yImt0uy6yTCWXsVbQNNDpxzHtV7/YE9p2PWWtnahjhAIoOq3SbF3tPJxKQj3iJyeo/m1OHM9aXqyTtyw==}
+    engines: {node: '>=20'}
 
   '@napi-rs/wasm-runtime@0.2.12':
     resolution: {integrity: sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==}
@@ -1722,6 +1729,8 @@ snapshots:
   '@humanwhocodes/module-importer@1.0.1': {}
 
   '@humanwhocodes/retry@0.4.3': {}
+
+  '@krislintigo-zenmoney/zenmoney-client@1.2.0': {}
 
   '@napi-rs/wasm-runtime@0.2.12':
     dependencies:
