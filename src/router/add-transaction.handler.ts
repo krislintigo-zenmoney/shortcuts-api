@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto'
 
+import type { ISODateString, Transaction } from '@krislintigo-zenmoney/zenmoney-client'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 
-import { zenmoneyClient } from '../api/zenmoney/zen.api'
-import type { ZenmoneyTransaction } from '../api/zenmoney/zenmoney.types'
+import { zenMoneyClient } from '../api/zenmoney'
 import { ZenmoneyToken } from '../schemas/common.schema'
 
 export const AddTransactionBodySchema = z.object({
@@ -19,23 +19,22 @@ export const addTransactionHandler = async (
   request: FastifyRequest<{ Body: AddTransactionBody }>,
   reply: FastifyReply,
 ) => {
-  const { token, sum, categoryId, accountId } = request.body
+  const { token: accessToken, sum, categoryId, accountId } = request.body
 
   const transactionAmount = Math.round(sum * 10000) / 10000
 
   const timestamp = Math.round(Date.now() / 1000)
+
   const {
-    user: users = [],
-    account: accounts = [],
-    tag: tags = [],
-  } = await zenmoneyClient.diff(
-    {
-      currentClientTimestamp: timestamp,
-      serverTimestamp: timestamp,
-      forceFetch: ['user', 'account', 'tag'],
-    },
-    { token },
-  )
+    user: users,
+    account: accounts,
+    tag: tags,
+  } = await zenMoneyClient.diff({
+    accessToken,
+    currentClientTimestamp: timestamp,
+    serverTimestamp: timestamp,
+    forceFetch: ['user', 'account', 'tag'],
+  })
 
   const mainUser = users.find(({ parent }) => parent === null)
   const account = accounts.find(({ id }) => id === accountId)
@@ -54,9 +53,9 @@ export const addTransactionHandler = async (
   }
 
   const now = new Date()
-  const date = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
+  const date: ISODateString = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
 
-  const transaction: ZenmoneyTransaction = {
+  const transaction: Transaction = {
     id: randomUUID(),
     created: timestamp,
     changed: timestamp,
@@ -100,15 +99,13 @@ export const addTransactionHandler = async (
   modifiedAccount.balance =
     Math.round((modifiedAccount.balance - transactionAmount) * 10000) / 10000
 
-  await zenmoneyClient.diff(
-    {
-      currentClientTimestamp: timestamp,
-      serverTimestamp: timestamp,
-      account: [modifiedAccount],
-      transaction: [transaction],
-    },
-    { token },
-  )
+  await zenMoneyClient.diff({
+    accessToken,
+    currentClientTimestamp: timestamp,
+    serverTimestamp: timestamp,
+    account: [modifiedAccount],
+    transaction: [transaction],
+  })
 
   reply.status(200).send({ success: true })
 }
