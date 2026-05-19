@@ -111,8 +111,6 @@ export const addTransactionViaApplePayHandler = async (
     outcomeBankID: null,
   }
 
-  console.log(transaction)
-
   const modifiedAccount = structuredClone(account)
   modifiedAccount.balance = Math.round((modifiedAccount.balance - sum) * 10000) / 10000
 
