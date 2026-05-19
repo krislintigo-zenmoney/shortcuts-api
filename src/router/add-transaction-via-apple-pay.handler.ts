@@ -28,7 +28,7 @@ export const addTransactionViaApplePayHandler = async (
   // TODO: find out how to use `name`
   const { token: accessToken, merchant } = request.body
 
-  const [rawSum, currency] = request.body.amount.split(' ')
+  const [rawSum, currency] = request.body.amount.trim().split(/\s+/u)
 
   if (!rawSum || !currency) {
     throw new ServerError('Invalid amount', { statusCode: 400 })
@@ -68,7 +68,7 @@ export const addTransactionViaApplePayHandler = async (
   const account = accounts.find(({ syncID }) => syncID?.includes(card))
 
   if (!account) {
-    throw new ServerError('Account not found', { statusCode: 418 })
+    throw new ServerError('Account not found', { statusCode: 400 })
   }
 
   const transaction: Transaction = {
