@@ -122,5 +122,5 @@ export const addTransactionViaApplePayHandler = async (
     transaction: [transaction],
   })
 
-  reply.status(200).send({ success: true })
+  reply.status(200).send({ ok: true })
 }

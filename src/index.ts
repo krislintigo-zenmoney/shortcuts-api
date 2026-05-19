@@ -20,13 +20,14 @@ app.setErrorHandler((error: FastifyError, _req: FastifyRequest, reply: FastifyRe
   const statusCode = error.statusCode ?? 500
 
   if (statusCode < 500) {
-    reply.status(statusCode).send({ error: error.name, message: error.message })
+    reply.status(statusCode).send({ ok: false, error: error.name, message: error.message })
     return
   }
 
-  app.log.error({ err: error, requestId: reply.request.id }, 'Unhandled server error')
+  app.log.error({ ok: false, err: error, requestId: reply.request.id }, 'Unhandled server error')
 
   reply.status(500).send({
+    ok: false,
     error: 'INTERNAL_SERVER_ERROR',
     message: 'Something went wrong',
     requestId: reply.request.id,
