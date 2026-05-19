@@ -7,6 +7,8 @@ import { z } from 'zod'
 import { zenMoneyClient } from '../api/zenmoney'
 import { ZenmoneyToken } from '../schemas/common.schema'
 
+export const SHORTCUT_VERSION = '1'
+
 export const AddTransactionBodySchema = z.object({
   token: ZenmoneyToken,
   accountId: z.uuid(),

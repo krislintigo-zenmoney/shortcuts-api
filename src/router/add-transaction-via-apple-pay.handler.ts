@@ -8,6 +8,8 @@ import { zenMoneyClient } from '../api/zenmoney'
 import { ZenmoneyToken } from '../schemas/common.schema'
 import { ServerError } from '../utils/error'
 
+export const SHORTCUT_VERSION = '1'
+
 export const AddTransactionViaApplePayBodySchema = z.object({
   token: ZenmoneyToken,
   amount: z.string(),
@@ -22,9 +24,6 @@ export const addTransactionViaApplePayHandler = async (
   request: FastifyRequest<{ Body: AddTransactionViaApplePayBody }>,
   reply: FastifyReply,
 ) => {
-  console.error('addTransactionViaApplePayHandler', new Date().toISOString())
-  console.error(request.body)
-  console.error(request.body.amount)
   // TODO: find out how to use `name`
   const { token: accessToken, merchant } = request.body
 

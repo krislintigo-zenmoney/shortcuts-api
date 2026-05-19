@@ -2,16 +2,26 @@ import 'dotenv/config'
 import type { FastifyError, FastifyReply, FastifyRequest } from 'fastify'
 import Fastify from 'fastify'
 
+import { checkVersion } from './middlewares/check-version'
 import { validateBody } from './middlewares/validate-body'
 import type { AddTransactionViaApplePayBody } from './router/add-transaction-via-apple-pay.handler'
 import {
+  SHORTCUT_VERSION as ADD_TRANSACTION_VIA_APPLE_PAY_VERSION,
   AddTransactionViaApplePayBodySchema,
   addTransactionViaApplePayHandler,
 } from './router/add-transaction-via-apple-pay.handler'
 import type { AddTransactionBody } from './router/add-transaction.handler'
-import { AddTransactionBodySchema, addTransactionHandler } from './router/add-transaction.handler'
+import {
+  AddTransactionBodySchema,
+  addTransactionHandler,
+  SHORTCUT_VERSION as ADD_TRANSACTION_VERSION,
+} from './router/add-transaction.handler'
 import type { GetAccountDataBody } from './router/get-account-data.handler'
-import { GetAccountDataBodySchema, getAccountDataHandler } from './router/get-account-data.handler'
+import {
+  GetAccountDataBodySchema,
+  getAccountDataHandler,
+  SHORTCUT_VERSION as GET_ACCOUNT_DATA_VERSION,
+} from './router/get-account-data.handler'
 
 const app = Fastify()
 
@@ -20,7 +30,7 @@ app.setErrorHandler((error: FastifyError, _req: FastifyRequest, reply: FastifyRe
   const statusCode = error.statusCode ?? 500
 
   if (statusCode < 500) {
-    reply.status(statusCode).send({ ok: false, error: error.name, message: error.message })
+    reply.status(statusCode).send({ ok: false, message: error.message })
     return
   }
 
@@ -28,7 +38,6 @@ app.setErrorHandler((error: FastifyError, _req: FastifyRequest, reply: FastifyRe
 
   reply.status(500).send({
     ok: false,
-    error: 'INTERNAL_SERVER_ERROR',
     message: 'Something went wrong',
     requestId: reply.request.id,
   })
@@ -40,19 +49,28 @@ app.get('/', (_req, res) => {
 
 app.post<{ Body: GetAccountDataBody }>(
   '/get-account-data',
-  validateBody(GetAccountDataBodySchema),
+  {
+    preValidation: [checkVersion(GET_ACCOUNT_DATA_VERSION), validateBody(GetAccountDataBodySchema)],
+  },
   getAccountDataHandler,
 )
 
 app.post<{ Body: AddTransactionBody }>(
   '/add-transaction',
-  validateBody(AddTransactionBodySchema),
+  {
+    preValidation: [checkVersion(ADD_TRANSACTION_VERSION), validateBody(AddTransactionBodySchema)],
+  },
   addTransactionHandler,
 )
 
 app.post<{ Body: AddTransactionViaApplePayBody }>(
   '/add-transaction/apple-pay',
-  validateBody(AddTransactionViaApplePayBodySchema),
+  {
+    preValidation: [
+      checkVersion(ADD_TRANSACTION_VIA_APPLE_PAY_VERSION),
+      validateBody(AddTransactionViaApplePayBodySchema),
+    ],
+  },
   addTransactionViaApplePayHandler,
 )
 
