@@ -3,6 +3,11 @@ import type { FastifyError, FastifyReply, FastifyRequest } from 'fastify'
 import Fastify from 'fastify'
 
 import { validateBody } from './middlewares/validate-body'
+import type { AddTransactionViaApplePayBody } from './router/add-transaction-via-apple-pay.handler'
+import {
+  AddTransactionViaApplePayBodySchema,
+  addTransactionViaApplePayHandler,
+} from './router/add-transaction-via-apple-pay.handler'
 import type { AddTransactionBody } from './router/add-transaction.handler'
 import { AddTransactionBodySchema, addTransactionHandler } from './router/add-transaction.handler'
 import type { GetAccountDataBody } from './router/get-account-data.handler'
@@ -42,6 +47,12 @@ app.post<{ Body: AddTransactionBody }>(
   '/add-transaction',
   validateBody(AddTransactionBodySchema),
   addTransactionHandler,
+)
+
+app.post<{ Body: AddTransactionViaApplePayBody }>(
+  '/add-transaction/apple-pay',
+  validateBody(AddTransactionViaApplePayBodySchema),
+  addTransactionViaApplePayHandler,
 )
 
 const bootstrap = async () => {
