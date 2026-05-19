@@ -22,7 +22,9 @@ export const addTransactionViaApplePayHandler = async (
   request: FastifyRequest<{ Body: AddTransactionViaApplePayBody }>,
   reply: FastifyReply,
 ) => {
-  console.log(request.body)
+  console.error('addTransactionViaApplePayHandler', new Date().toISOString())
+  console.error(request.body)
+  console.error(request.body.amount)
   // TODO: find out how to use `name`
   const { token: accessToken, merchant } = request.body
 
