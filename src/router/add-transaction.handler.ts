@@ -1,11 +1,12 @@
 import { randomUUID } from 'node:crypto'
 
-import type { ISODateString, Transaction } from '@krislintigo-zenmoney/zenmoney-client'
-import type { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 
-import { zenMoneyClient } from '../api/zenmoney'
-import { ZenmoneyToken } from '../schemas/common.schema'
+import { zenMoneyClient } from '../api/zenmoney.js'
+import { ZenmoneyToken } from '../schemas/common.schema.js'
+
+import type { Transaction } from '@krislintigo-zenmoney/zenmoney-client'
+import type { FastifyReply, FastifyRequest } from 'fastify'
 
 export const SHORTCUT_VERSION = '1'
 
@@ -15,6 +16,7 @@ export const AddTransactionBodySchema = z.object({
   categoryId: z.uuid(),
   sum: z.number().positive(),
 })
+
 export type AddTransactionBody = z.infer<typeof AddTransactionBodySchema>
 
 export const addTransactionHandler = async (
@@ -23,7 +25,7 @@ export const addTransactionHandler = async (
 ) => {
   const { token: accessToken, sum, categoryId, accountId } = request.body
 
-  const transactionAmount = Math.round(sum * 10000) / 10000
+  const transactionAmount = Math.round(sum * 10_000) / 10_000
 
   const timestamp = Math.round(Date.now() / 1000)
 
@@ -39,23 +41,25 @@ export const addTransactionHandler = async (
   })
 
   const mainUser = users.find(({ parent }) => parent === null)
-  const account = accounts.find(({ id }) => id === accountId)
-  const tag = tags.find(({ id }) => id === categoryId)
 
   if (!mainUser) {
     throw new Error('Main user not found (impossible)')
   }
 
+  const account = accounts.find(({ id }) => id === accountId)
+
   if (!account) {
     throw new Error('Account not found')
   }
+
+  const tag = tags.find(({ id }) => id === categoryId)
 
   if (!tag) {
     throw new Error('Category not found')
   }
 
   const now = new Date()
-  const date: ISODateString = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
+  const date = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
 
   const transaction: Transaction = {
     id: randomUUID(),
@@ -99,7 +103,7 @@ export const addTransactionHandler = async (
 
   const modifiedAccount = structuredClone(account)
   modifiedAccount.balance =
-    Math.round((modifiedAccount.balance - transactionAmount) * 10000) / 10000
+    Math.round((modifiedAccount.balance - transactionAmount) * 10_000) / 10_000
 
   await zenMoneyClient.diff({
     accessToken,

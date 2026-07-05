@@ -1,16 +1,19 @@
-import type { z } from 'zod'
 import { ZodError } from 'zod'
 
-import { ServerError } from './error'
+import { ServerError } from './error.js'
+
+import type { z } from 'zod'
 
 export const validate = <S extends z.ZodType>(data: unknown, schema: S): z.infer<S> => {
   try {
     return schema.parse(data)
-  } catch (error: unknown) {
+  } catch (error) {
     if (error instanceof ZodError) {
       console.error(error)
+
       throw new ServerError('Validation error', { statusCode: 400 })
     }
+
     throw error
   }
 }

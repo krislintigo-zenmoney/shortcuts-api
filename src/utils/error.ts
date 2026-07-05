@@ -9,12 +9,12 @@ export interface ServerErrorOptions {
 export class ServerError extends Error {
   public readonly statusCode: number
   public readonly code: string
-  public readonly cause?: unknown
+  public override readonly cause?: unknown
   public readonly details?: Record<string, unknown>
   public readonly expose: boolean
 
   constructor(message: string, options: ServerErrorOptions = {}) {
-    super(message)
+    super(message, options)
 
     this.name = 'ServerError'
 

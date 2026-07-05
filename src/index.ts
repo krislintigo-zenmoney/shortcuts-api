@@ -1,36 +1,39 @@
-import 'dotenv/config'
-import type { FastifyError, FastifyReply, FastifyRequest } from 'fastify'
 import Fastify from 'fastify'
 
-import { checkVersion } from './middlewares/check-version'
-import { validateBody } from './middlewares/validate-body'
-import type { AddTransactionViaApplePayBody } from './router/add-transaction-via-apple-pay.handler'
+import { ENV } from './env.js'
+import { checkVersion } from './middlewares/check-version.js'
+import { validateBody } from './middlewares/validate-body.js'
 import {
-  SHORTCUT_VERSION as ADD_TRANSACTION_VIA_APPLE_PAY_VERSION,
   AddTransactionViaApplePayBodySchema,
   addTransactionViaApplePayHandler,
-} from './router/add-transaction-via-apple-pay.handler'
-import type { AddTransactionBody } from './router/add-transaction.handler'
+  SHORTCUT_VERSION as ADD_TRANSACTION_VIA_APPLE_PAY_VERSION,
+} from './router/add-transaction-via-apple-pay.handler.js'
 import {
   AddTransactionBodySchema,
   addTransactionHandler,
   SHORTCUT_VERSION as ADD_TRANSACTION_VERSION,
-} from './router/add-transaction.handler'
-import type { GetAccountDataBody } from './router/get-account-data.handler'
+} from './router/add-transaction.handler.js'
 import {
   GetAccountDataBodySchema,
   getAccountDataHandler,
   SHORTCUT_VERSION as GET_ACCOUNT_DATA_VERSION,
-} from './router/get-account-data.handler'
+} from './router/get-account-data.handler.js'
+
+import type { AddTransactionViaApplePayBody } from './router/add-transaction-via-apple-pay.handler.js'
+import type { AddTransactionBody } from './router/add-transaction.handler.js'
+import type { GetAccountDataBody } from './router/get-account-data.handler.js'
+import type { FastifyError, FastifyReply, FastifyRequest } from 'fastify'
 
 const app = Fastify()
 
 app.setErrorHandler((error: FastifyError, _req: FastifyRequest, reply: FastifyReply) => {
-  console.log('error', error.message.split('\n').join(''))
+  console.error('error', error.message.replaceAll('\n', ''))
+
   const statusCode = error.statusCode ?? 500
 
   if (statusCode < 500) {
     reply.status(statusCode).send({ ok: false, message: error.message })
+
     return
   }
 
@@ -74,18 +77,10 @@ app.post<{ Body: AddTransactionViaApplePayBody }>(
   addTransactionViaApplePayHandler,
 )
 
-const bootstrap = async () => {
-  if (!process.env.PORT) {
-    throw new Error('PORT env variable is not set')
-  }
-  const port = parseInt(process.env.PORT, 10)
-
-  try {
-    await app.listen({ port })
-    console.log(`Server started on port ${port}`)
-  } catch (err) {
-    app.log.error(err)
-    process.exit(1)
-  }
+try {
+  await app.listen({ port: ENV.PORT })
+  console.log(`Server started on port ${ENV.PORT}`)
+} catch (error) {
+  app.log.error(error)
+  process.exitCode = 1
 }
-void bootstrap()
