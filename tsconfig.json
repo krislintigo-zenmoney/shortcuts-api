@@ -1,32 +1,9 @@
 {
+  "extends": "@krislintigo/tsconfig/node.json",
   "compilerOptions": {
-    "target": "esnext",
-    "lib": ["esnext"],
-
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-
-    "rootDir": "./src",
-    "outDir": "./dist",
-
-    "types": ["node"],
-
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-
-    "resolveJsonModule": true,
-
-    "noEmitOnError": true
+    "rootDir": "src",
+    "outDir": "dist",
+    "noEmit": false
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src"]
 }

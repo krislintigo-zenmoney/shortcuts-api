@@ -1,14 +1,16 @@
-import type { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 
-import { zenMoneyClient } from '../api/zenmoney'
-import { ZenmoneyToken } from '../schemas/common.schema'
+import { zenMoneyClient } from '../api/zenmoney.js'
+import { ZenmoneyToken } from '../schemas/common.schema.js'
+
+import type { FastifyReply, FastifyRequest } from 'fastify'
 
 export const SHORTCUT_VERSION = '1'
 
 export const GetAccountDataBodySchema = z.object({
   token: ZenmoneyToken,
 })
+
 export type GetAccountDataBody = z.infer<typeof GetAccountDataBodySchema>
 
 export const getAccountDataHandler = async (

@@ -1,12 +1,13 @@
 import { randomUUID } from 'node:crypto'
 
-import type { ISODateString, Transaction } from '@krislintigo-zenmoney/zenmoney-client'
-import type { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 
-import { zenMoneyClient } from '../api/zenmoney'
-import { ZenmoneyToken } from '../schemas/common.schema'
-import { ServerError } from '../utils/error'
+import { zenMoneyClient } from '../api/zenmoney.js'
+import { ZenmoneyToken } from '../schemas/common.schema.js'
+import { ServerError } from '../utils/error.js'
+
+import type { Transaction } from '@krislintigo-zenmoney/zenmoney-client'
+import type { FastifyReply, FastifyRequest } from 'fastify'
 
 export const SHORTCUT_VERSION = '1'
 
@@ -18,6 +19,7 @@ export const AddTransactionViaApplePayBodySchema = z.object({
   name: z.string(),
   date: z.iso.datetime({ offset: true }),
 })
+
 export type AddTransactionViaApplePayBody = z.infer<typeof AddTransactionViaApplePayBodySchema>
 
 export const addTransactionViaApplePayHandler = async (
@@ -29,17 +31,17 @@ export const addTransactionViaApplePayHandler = async (
   // TODO: find out how to use `name`
   const { token: accessToken, merchant } = request.body
 
-  const [rawSum, currency] = request.body.amount.trim().split(/\s+/u)
+  const [rawSum = '', currency = ''] = request.body.amount.trim().split(/\s+/u)
 
   if (!rawSum || !currency) {
     throw new ServerError('Invalid amount', { statusCode: 400 })
   }
 
-  const sum = parseFloat(rawSum.replaceAll(',', '.'))
+  const sum = Number(rawSum.replaceAll(',', '.'))
 
-  const transactionDate = request.body.date.split('T')[0]
+  const transactionDate = request.body.date.split('T', 1)[0]
 
-  if (!transactionDate) {
+  if (transactionDate === undefined) {
     throw new ServerError('Invalid date', { statusCode: 400 })
   }
 
@@ -66,7 +68,7 @@ export const addTransactionViaApplePayHandler = async (
     throw new Error('Main user not found (impossible)')
   }
 
-  const account = accounts.find(({ syncID }) => syncID?.includes(card))
+  const account = accounts.find(({ syncID }) => syncID?.includes(card) ?? false)
 
   if (!account) {
     throw new ServerError('Account not found', { statusCode: 400 })
@@ -101,7 +103,7 @@ export const addTransactionViaApplePayHandler = async (
     originalPayee: merchant,
     comment: null,
 
-    date: transactionDate as ISODateString,
+    date: transactionDate,
     mcc: null,
 
     reminderMarker: null,
@@ -114,7 +116,7 @@ export const addTransactionViaApplePayHandler = async (
   }
 
   const modifiedAccount = structuredClone(account)
-  modifiedAccount.balance = Math.round((modifiedAccount.balance - sum) * 10000) / 10000
+  modifiedAccount.balance = Math.round((modifiedAccount.balance - sum) * 10_000) / 10_000
 
   await zenMoneyClient.diff({
     accessToken,
