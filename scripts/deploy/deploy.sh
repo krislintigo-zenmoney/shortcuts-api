@@ -8,4 +8,4 @@ pnpm install --frozen-lockfile
 
 pnpm build
 
-pm2 reload ecosystem.config.js
+pm2 reload ecosystem.config.cjs
